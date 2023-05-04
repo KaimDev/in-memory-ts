@@ -109,5 +109,6 @@
   "files": [
     "src/main.ts"
   ],
-  // "include": ["src/**/*"]
+
+  "include": ["src/**/*.ts"]
 }

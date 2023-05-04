@@ -1,1 +1,4 @@
-export class Document {}
+export class Document {
+
+    public _id?: string;
+}
