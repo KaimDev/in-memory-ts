@@ -2,8 +2,8 @@
   "name": "in-memory-ts",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.ts",
-  "type": "module",
+  "main": "js/main.js",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc && node js/main.js"

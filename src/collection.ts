@@ -27,7 +27,7 @@ export class Collection {
                         }
                         else {
                             
-                            reject("There is no document with that property");
+                            throw new Error("There is no document with that property");
                         }
                     }
                 }
@@ -42,65 +42,65 @@ export class Collection {
             }
             else {
 
-                reject("The collection has not documents");
+                throw new Error("The collection has not documents");
             }
         })
     }
 
-    public find(query?: object): Promise<object[]> {
+    // public find(query?: object): Promise<object[]> {
 
-        return new Promise((resolve, reject) => {
-
-            
-        })
-    }
-    public findOne(query?: object): Promise<object | null> {
-
-        return new Promise((resolve, reject) => {
+    //     return new Promise((resolve, reject) => {
 
             
-        })
-    }
-    public insertOne(query: object): Promise<IInsertOneResponse> {
+    //     })
+    // }
+    // public findOne(query?: object): Promise<object | null> {
 
-        return new Promise((resolve, reject) => {
-
-            
-        })
-    }
-    public insertMany(query: object[]): Promise<IInsertManyResponse> {
-
-        return new Promise((resolve, reject) => {
+    //     return new Promise((resolve, reject) => {
 
             
-        })
-    }
-    public updateOne(query: object, update: object): Promise<IUpdateOneResponse> {
+    //     })
+    // }
+    // public insertOne(query: object): Promise<IInsertOneResponse> {
 
-        return new Promise((resolve, reject) => {
-
-            
-        })
-    }
-    public updateMany(query: object, update: object): Promise<IUpdateManyResponse> {
-
-        return new Promise((resolve, reject) => {
+    //     return new Promise((resolve, reject) => {
 
             
-        })
-    }
-    public deleteOne(query: object): Promise<IDeleteOneResponse> {
+    //     })
+    // }
+    // public insertMany(query: object[]): Promise<IInsertManyResponse> {
 
-        return new Promise((resolve, reject) => {
-
-            
-        })
-    }
-    public deleteMany(query: object): Promise<IDeleteManyResponse> {
-
-        return new Promise((resolve, reject) => {
+    //     return new Promise((resolve, reject) => {
 
             
-        })
-    }
+    //     })
+    // }
+    // public updateOne(query: object, update: object): Promise<IUpdateOneResponse> {
+
+    //     return new Promise((resolve, reject) => {
+
+            
+    //     })
+    // }
+    // public updateMany(query: object, update: object): Promise<IUpdateManyResponse> {
+
+    //     return new Promise((resolve, reject) => {
+
+            
+    //     })
+    // }
+    // public deleteOne(query: object): Promise<IDeleteOneResponse> {
+
+    //     return new Promise((resolve, reject) => {
+
+            
+    //     })
+    // }
+    // public deleteMany(query: object): Promise<IDeleteManyResponse> {
+
+    //     return new Promise((resolve, reject) => {
+
+            
+    //     })
+    // }
 }
