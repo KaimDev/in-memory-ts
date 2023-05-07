@@ -47,60 +47,91 @@ export class Collection {
         })
     }
 
-    // public find(query?: object): Promise<object[]> {
+    public find(query?: object): Promise<object[]> {
 
-    //     return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
 
-            
-    //     })
-    // }
-    // public findOne(query?: object): Promise<object | null> {
+            if (query != undefined && this.documents != undefined) {
+                
+                let matches: object[] = [];
 
-    //     return new Promise((resolve, reject) => {
+                for (const key in query) {
 
-            
-    //     })
-    // }
-    // public insertOne(query: object): Promise<IInsertOneResponse> {
+                    for (let document of this.documents) {
 
-    //     return new Promise((resolve, reject) => {
+                        if ((document as Object).hasOwnProperty(key)) {
 
-            
-    //     })
-    // }
-    // public insertMany(query: object[]): Promise<IInsertManyResponse> {
+                            const valueOfDocumentKey: any = (document as any)[key];
+                            const valueOfQueryKey: any = (query as any)[key];
 
-    //     return new Promise((resolve, reject) => {
+                            if (valueOfDocumentKey === valueOfQueryKey) {
+                                matches.push(document);
+                            }
+                        }
+                    }
 
-            
-    //     })
-    // }
-    // public updateOne(query: object, update: object): Promise<IUpdateOneResponse> {
+                }
 
-    //     return new Promise((resolve, reject) => {
+                resolve(matches);
+            }
+            else if (this.documents != undefined) {
 
-            
-    //     })
-    // }
-    // public updateMany(query: object, update: object): Promise<IUpdateManyResponse> {
+                resolve(this.documents)
+            }
+            else {
 
-    //     return new Promise((resolve, reject) => {
+                throw new Error("The collection has not documents");
+            }
 
-            
-    //     })
-    // }
-    // public deleteOne(query: object): Promise<IDeleteOneResponse> {
+        })
+    }
+    public findOne(query?: object): Promise<object | null> {
 
-    //     return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
 
             
-    //     })
-    // }
-    // public deleteMany(query: object): Promise<IDeleteManyResponse> {
+        })
+    }
+    public insertOne(query: object): Promise<IInsertOneResponse> {
 
-    //     return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
 
             
-    //     })
-    // }
+        })
+    }
+    public insertMany(query: object[]): Promise<IInsertManyResponse> {
+
+        return new Promise((resolve, reject) => {
+
+            
+        })
+    }
+    public updateOne(query: object, update: object): Promise<IUpdateOneResponse> {
+
+        return new Promise((resolve, reject) => {
+
+            
+        })
+    }
+    public updateMany(query: object, update: object): Promise<IUpdateManyResponse> {
+
+        return new Promise((resolve, reject) => {
+
+            
+        })
+    }
+    public deleteOne(query: object): Promise<IDeleteOneResponse> {
+
+        return new Promise((resolve, reject) => {
+
+            
+        })
+    }
+    public deleteMany(query: object): Promise<IDeleteManyResponse> {
+
+        return new Promise((resolve, reject) => {
+
+            
+        })
+    }
 }
