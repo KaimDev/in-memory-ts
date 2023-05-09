@@ -1,5 +1,10 @@
 import { Document } from "./document";
-  
+import { IDeleteManyResponse } from "./interface/delete-many-response.interface";
+import { IDeleteOneResponse } from "./interface/delete-one-response.interface";
+import { IInsertManyResponse } from "./interface/insert-many-response.interface";
+import { IInsertOneResponse } from "./interface/insert-one-response.interface";
+import { IUpdateManyResponse } from "./interface/update-many-response.interface";
+import { IUpdateOneResponse } from "./interface/update-one-response.interface";
 
 export class Collection {
 
@@ -89,7 +94,30 @@ export class Collection {
 
         return new Promise((resolve, reject) => {
 
-            
+            if (query != undefined && this.documents != undefined) {
+
+                for (const key in query) {
+
+                    for (let document of this.documents) {
+
+                        if ((document as Object).hasOwnProperty(key)) {
+
+                            const valueOfDocumentKey: any = (document as any)[key];
+                            const valueOfQueryKey: any = (query as any)[key];
+
+                            if (valueOfDocumentKey === valueOfQueryKey) {
+                                resolve(document);
+                            }
+                        }
+                    }
+
+                }
+            }
+            else {
+
+                throw new Error("Empty Query");
+            }
+
         })
     }
     public insertOne(query: object): Promise<IInsertOneResponse> {

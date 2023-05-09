@@ -1,4 +1,4 @@
-interface IInsertManyResponse {
+export interface IInsertManyResponse {
     success: boolean;
     insertedIds: string[];
 }

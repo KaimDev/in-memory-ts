@@ -1,4 +1,4 @@
-interface IUpdateManyResponse {
+export interface IUpdateManyResponse {
     success: boolean;
     modifiedCount: number;
     upsertedCount: number;
