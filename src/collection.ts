@@ -1,4 +1,4 @@
-import { v4 as uuidv4, v4 } from 'uuid';
+import { v4 } from 'uuid';
 
 import { Document } from "./document";
 import { IDeleteManyResponse } from "./interface/delete-many-response.interface";
@@ -55,7 +55,7 @@ export class Collection {
         })
     }
 
-    public find(query?: object): Promise<object[]> {
+    public async find(query?: object): Promise<object[]> {
 
         return new Promise((resolve, reject) => {
 
@@ -94,7 +94,7 @@ export class Collection {
         })
     }
 
-    public findOne(query?: object): Promise<object | null> {
+    public async findOne(query?: object): Promise<object | null> {
 
         return new Promise((resolve, reject) => {
 
@@ -125,7 +125,7 @@ export class Collection {
         })
     }
 
-    public insertOne(query: object): Promise<IInsertOneResponse> {
+    public async insertOne(query: object): Promise<IInsertOneResponse> {
         return new Promise((resolve, reject) => {
 
             if (query) {
@@ -134,7 +134,7 @@ export class Collection {
                 Object.setPrototypeOf(document, query)
                 this.documents!.push(document);
 
-                resolve({ success: true, insertedId: document._id });
+                resolve({ success: true, insertedId: document._id!});
             }
             else {
                 throw new Error("Invalid query");
@@ -142,7 +142,7 @@ export class Collection {
         })
     }
 
-    public insertMany(query: object[]): Promise<IInsertManyResponse> {
+    public async insertMany(query: object[]): Promise<IInsertManyResponse> {
         return new Promise((resolve, reject) => {
             let id_collection: string[] = [];
 
@@ -150,7 +150,7 @@ export class Collection {
                 query.forEach((queryItem: Object) => {
                     let document: Document = new Document();
                     document._id = v4();
-                    id_collection.push(document._id);
+                    id_collection.push(document._id!);
                     Object.setPrototypeOf(document, queryItem);
                     this.documents!.push(document);
                 })
@@ -167,28 +167,46 @@ export class Collection {
             resolve(response);
         })
     }
-    public updateOne(query: object, update: object): Promise<IUpdateOneResponse> {
+
+    public async updateOne(query: object, update: object): Promise<IUpdateOneResponse> {
+        return new Promise(async (resolve, reject) => {
+            let document: Record<string, any> | null = await this.findOne(query);
+            const update_map: Record<string, any> = update;
+            
+            if (document !== null && update_map['$set'] !== null) {
+                for (const key in update_map) {
+                  for (const sub_key in update_map[key]) {
+                    document[sub_key] = update_map[key][sub_key];
+                  }
+                }
+                
+                resolve({
+                    success: true,
+                    modifiedCount: Object.keys(update).length,
+                    upsertedCount: 0,
+                    upsertedId: document._id,
+                    matchedCount: 1
+                  });
+            } else {
+                reject("Document not found");
+            }
+        })
+    }
+    public async updateMany(query: object, update: object): Promise<IUpdateManyResponse> {
 
         return new Promise((resolve, reject) => {
 
             
         })
     }
-    public updateMany(query: object, update: object): Promise<IUpdateManyResponse> {
+    public async deleteOne(query: object): Promise<IDeleteOneResponse> {
 
         return new Promise((resolve, reject) => {
 
             
         })
     }
-    public deleteOne(query: object): Promise<IDeleteOneResponse> {
-
-        return new Promise((resolve, reject) => {
-
-            
-        })
-    }
-    public deleteMany(query: object): Promise<IDeleteManyResponse> {
+    public async deleteMany(query: object): Promise<IDeleteManyResponse> {
 
         return new Promise((resolve, reject) => {
 
