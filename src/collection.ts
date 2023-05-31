@@ -9,7 +9,7 @@ import { IUpdateManyResponse } from "./interface/update-many-response.interface"
 import { IUpdateOneResponse } from "./interface/update-one-response.interface";
 
 export class Collection {
-  private documents?: Document[];
+  private documents: Document[] = [];
 
   public async count(query?: object): Promise<number> {
     return new Promise((resolve, reject) => {
@@ -49,9 +49,9 @@ export class Collection {
 
         for (const key in query) {
           for (let document of this.documents) {
-            if (document.hasOwnProperty(key)) {
-              const valueOfDocumentKey: any = (document as any)[key];
-              const valueOfQueryKey: any = (query as any)[key];
+            if (key in document) {
+              const valueOfDocumentKey: any = (document as Record<string, any>)[key];
+              const valueOfQueryKey: any = (query as Record<string, any>)[key];
 
               if (valueOfDocumentKey === valueOfQueryKey) {
                 matches.push(document);
@@ -71,22 +71,31 @@ export class Collection {
 
   public async findOne(query?: object): Promise<object | null> {
     return new Promise((resolve, reject) => {
+      let matchFound = false;
+
       if (query && this.documents) {
         for (const key in query) {
           for (let document of this.documents) {
-            if (document.hasOwnProperty(key)) {
-              const valueOfDocumentKey: any = (document as any)[key];
-              const valueOfQueryKey: any = (query as any)[key];
-
+            if (key in document) {
+              const valueOfDocumentKey: any = (document as Record<string, any>)[key];
+              const valueOfQueryKey: any = (query as Record<string, any>)[key];
+              
               if (valueOfDocumentKey === valueOfQueryKey) {
                 resolve(document);
+                break;
               }
             }
           }
+
+          if (matchFound) {
+            break;
+          }
         }
+
       } else {
         throw new Error("Empty Query");
       }
+      resolve(null);
     });
   }
 
@@ -95,8 +104,8 @@ export class Collection {
       if (query) {
         let document: Document = new Document();
         document._id = v4();
-        Object.setPrototypeOf(document, query);
-        this.documents!.push(document);
+        Object.assign(document, query);
+        this.documents.push(document);
 
         resolve({ success: true, insertedId: document._id! });
       } else {
@@ -114,7 +123,7 @@ export class Collection {
           let document: Document = new Document();
           document._id = v4();
           id_collection.push(document._id!);
-          Object.setPrototypeOf(document, queryItem);
+          Object.assign(document, queryItem);
           this.documents!.push(document);
         });
       } else {
@@ -138,7 +147,7 @@ export class Collection {
       let document: Record<string, any> | null = await this.findOne(query);
       const update_map: Record<string, any> = update;
 
-      if (document && update_map["$set"]) {
+      if (document && update_map["$set"] !== null) {
         for (const key in update_map["$set"]) {
           document[key] = update_map["$set"][key];
         }
@@ -187,7 +196,7 @@ export class Collection {
 
         if (matchedCount === 0) {
           let new_query: object = query;
-          Object.setPrototypeOf(new_query, (update as any)['$set']);
+          Object.assign(new_query, (update as any)['$set']);
           await this.insertOne(new_query);
           upsertedCount++;
         }

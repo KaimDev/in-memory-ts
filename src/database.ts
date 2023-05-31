@@ -84,6 +84,7 @@ export class Database {
             if (this.collections !== undefined)
             {
                 this.collections.delete(name);
+                console.log(`${name} is droped`);
                 resolve();
             }
             else {
