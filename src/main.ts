@@ -23,7 +23,7 @@ async function main() {
         console.log(worker);
     })
 
-    const updateManyResponse = await users.updateMany({company: "Facebook"}, { $set: {company: "Amazon"} });
+    const updateManyResponse = await users.updateMany({company: "Google"}, { $set: {company: "Amazon"} });
     console.log(updateManyResponse);
 
     const amazonWorkers: object[] = await users.find({company: "Amazon"});
@@ -33,7 +33,7 @@ async function main() {
         console.log(worker);
     })
 
-    await users.deleteOne({company: "Amazon"});
+    await users.deleteMany({company: "Amazon"});
 
     console.log(await users.find());
 

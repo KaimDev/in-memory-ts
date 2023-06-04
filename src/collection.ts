@@ -11,7 +11,7 @@ import { IUpdateOneResponse } from "./interface/update-one-response.interface";
 export class Collection {
   private documents: Document[] = [];
 
-  public async count(query?: object): Promise<number> {
+  public count(query?: object): Promise<number> {
     return new Promise((resolve, reject) => {
       let count: number = 0;
 
@@ -22,9 +22,7 @@ export class Collection {
               const valueOfDocumentKey: any = (document as Record<string, any>)[key];
               const valueOfQueryKey: any = (query as Record<string, any>)[key];
 
-              if (valueOfDocumentKey === valueOfQueryKey)
-                count++;
-              
+              if (valueOfDocumentKey === valueOfQueryKey) count++;
             } else {
               throw new Error("There is no document with that property");
             }
@@ -42,7 +40,7 @@ export class Collection {
     });
   }
 
-  public async find(query?: object): Promise<object[]> {
+  public find(query?: object): Promise<object[]> {
     return new Promise((resolve, reject) => {
       if (query && this.documents) {
         let matches: object[] = [];
@@ -69,7 +67,7 @@ export class Collection {
     });
   }
 
-  public async findOne(query?: object): Promise<object | null> {
+  public findOne(query?: object): Promise<object | null> {
     return new Promise((resolve, reject) => {
       let matchFound = false;
 
@@ -79,7 +77,7 @@ export class Collection {
             if (key in document) {
               const valueOfDocumentKey: any = (document as Record<string, any>)[key];
               const valueOfQueryKey: any = (query as Record<string, any>)[key];
-              
+
               if (valueOfDocumentKey === valueOfQueryKey) {
                 resolve(document);
                 break;
@@ -91,7 +89,6 @@ export class Collection {
             break;
           }
         }
-
       } else {
         throw new Error("Empty Query");
       }
@@ -99,12 +96,16 @@ export class Collection {
     });
   }
 
-  public async insertOne(query: object): Promise<IInsertOneResponse> {
+  public insertOne(query: object): Promise<IInsertOneResponse> {
     return new Promise((resolve, reject) => {
       if (query) {
         let document: Document = new Document();
         document._id = v4();
-        Object.assign(document, query);
+
+        for (const key in query) {
+          (document as Record<string, any>)[key] = (query as Record<string, any>)[key];
+        }
+
         this.documents.push(document);
 
         resolve({ success: true, insertedId: document._id! });
@@ -114,7 +115,7 @@ export class Collection {
     });
   }
 
-  public async insertMany(query: object[]): Promise<IInsertManyResponse> {
+  public insertMany(query: object[]): Promise<IInsertManyResponse> {
     return new Promise((resolve, reject) => {
       let id_collection: string[] = [];
 
@@ -123,7 +124,11 @@ export class Collection {
           let document: Document = new Document();
           document._id = v4();
           id_collection.push(document._id!);
-          Object.assign(document, queryItem);
+
+          for (const key in queryItem) {
+            (document as Record<string, any>)[key] = (queryItem as Record<string, any>)[key];
+          }
+
           this.documents!.push(document);
         });
       } else {
@@ -139,10 +144,7 @@ export class Collection {
     });
   }
 
-  public async updateOne(
-    query: object,
-    update: object
-  ): Promise<IUpdateOneResponse> {
+  public updateOne(query: object, update: object): Promise<IUpdateOneResponse> {
     return new Promise(async (resolve, reject) => {
       let document: Record<string, any> | null = await this.findOne(query);
       const update_map: Record<string, any> = update;
@@ -165,7 +167,7 @@ export class Collection {
     });
   }
 
-  public async updateMany(
+  public updateMany(
     query: object,
     update: object
   ): Promise<IUpdateManyResponse> {
@@ -184,8 +186,7 @@ export class Collection {
               const value_doc: any = (doc as Record<string, any>)[key];
               const value_update: any = update_map["$set"][key];
 
-              if (value_doc !== value_update)
-              {
+              if (value_doc !== value_update) {
                 (doc as Record<string, any>)[key] = update_map["$set"][key];
                 modifiedCount++;
               }
@@ -196,7 +197,11 @@ export class Collection {
 
         if (matchedCount === 0) {
           let new_query: object = query;
-          Object.assign(new_query, (update as any)['$set']);
+
+          for (const key in (update as any)["$set"]) {
+            (new_query as Record<string, any>)[key] = (update as Record<string, any>)[key];
+          }
+
           await this.insertOne(new_query);
           upsertedCount++;
         }
@@ -205,20 +210,20 @@ export class Collection {
           success: true,
           modifiedCount: modifiedCount,
           upsertedCount: upsertedCount,
-          matchedCount: matchedCount  
-        })
+          matchedCount: matchedCount,
+        });
       } else {
         reject({
           success: false,
           modifiedCount: 0,
           upsertedCount: 0,
-          matchedCount: 0
-        })
+          matchedCount: 0,
+        });
       }
     });
   }
 
-  public async deleteOne(query: object): Promise<IDeleteOneResponse> {
+  public deleteOne(query: object): Promise<IDeleteOneResponse> {
     return new Promise((resolve, reject) => {
       let success: boolean = false;
 
@@ -233,15 +238,13 @@ export class Collection {
         }
         return true;
       });
-      
-      if (success)
-        resolve({ success: success, deletedCount: 1 });
-      else
-        reject({ success: success, deletedCount: 0 });
+
+      if (success) resolve({ success: success, deletedCount: 1 });
+      else reject({ success: success, deletedCount: 0 });
     });
   }
 
-  public async deleteMany(query: object): Promise<IDeleteManyResponse> {
+  public deleteMany(query: object): Promise<IDeleteManyResponse> {
     return new Promise((resolve, reject) => {
       let success: boolean = false;
       let deletedCount: number = 0;
@@ -256,11 +259,9 @@ export class Collection {
           return true;
         }
       });
-      
-      if (success)
-        resolve({ success: success, deletedCount: deletedCount });
-      else
-        reject({ success: success, deletedCount: 0 });
+
+      if (success) resolve({ success: success, deletedCount: deletedCount });
+      else reject({ success: success, deletedCount: 0 });
     });
   }
 }
